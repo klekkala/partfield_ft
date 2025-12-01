@@ -1,0 +1,60 @@
+# Configuration for fine-tuning PartField on PartNet Mobility Dataset
+
+result_name: partnet_mobility_finetune
+
+# Checkpoint to load pretrained weights from
+continue_ckpt: model/model_objaverse.ckpt
+
+# Model architecture settings
+triplane_channels_low: 128
+triplane_channels_high: 512
+triplane_resolution: 128
+
+# Point sampling settings
+n_point_per_face: 2000  # Points to sample per face for dense sampling
+n_sample_each: 10000    # Total points to sample from each mesh
+
+# Preprocessing
+is_pc: False            # False for mesh input, True for point cloud
+remesh_demo: False
+preprocess_mesh: True   # Enable mesh preprocessing (cleanup, merging vertices)
+
+# Dataset configuration
+dataset:
+  type: "PartNetMobility"
+  data_path: "data/partnet_mobility"  # Path to PartNet Mobility dataset
+  train_batch_size: 4
+  val_batch_size: 4
+  train_num_workers: 8
+  categories: null  # null for all categories, or list like ['Door', 'Drawer', 'Laptop']
+
+# Training hyperparameters
+optimizer:
+  lr: 1e-4              # Initial learning rate
+  lr_min: 1e-6          # Minimum learning rate for cosine annealing
+  weight_decay: 0.01
+  max_epochs: 100
+
+# Loss weights
+loss:
+  triplet: 1.0          # Margin for triplet loss
+
+# Training settings
+accumulate_grad_batches: 2  # Gradient accumulation steps
+
+# Logging
+log_every_n_steps: 10
+val_check_interval: 1.0  # Validate every epoch
+
+# Checkpointing
+save_top_k: 3           # Keep top 3 checkpoints
+save_last: True         # Always save last checkpoint
+
+# Data augmentation
+augmentation:
+  random_rotation: True
+  rotation_range: 15    # degrees
+  random_scale: True
+  scale_range: [0.9, 1.1]
+  random_jitter: True
+  jitter_std: 0.01
